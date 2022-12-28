@@ -1,25 +1,33 @@
-require('dotenv').config()
-const express = require('express')
-const workoutRoutes = require('./routes/workouts')
+require("dotenv").config();
+const express = require("express");
+const workoutRoutes = require("./routes/workouts");
+const mongoose = require("mongoose");
+
+mongoose.set('strictQuery', false);
 
 // Create express instance (app)
-const app = express()
+const app = express();
 
 // middleware
-app.use(express.json()) // for parsing application/json
+app.use(express.json()); // for parsing application/json
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next()
-})
-
+  console.log(req.path, req.method);
+  next();
+});
 
 // routes
-app.use('/api/workouts', workoutRoutes)
+app.use("/api/workouts", workoutRoutes);
 
-// listen for requests
+// Connect to DB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    // listen for requests
 app.listen(process.env.PORT, () => {
-    console.log('App listening on port 4001')
-})
-
-
+    console.log("connected to db & listening on port 4001");
+  });
+  })
+  .catch((err) => {
+    console.log("Error connecting to DB", err);
+    });
 
